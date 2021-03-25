@@ -1,28 +1,41 @@
 if CLIENT then
-local function checkbinds()
-if file.Exists("gmodadminsuite/keybinds/keybinds.txt", "DATA") then 
-	GAS.Keybinds = util.JSONToTable(file.Read("gmodadminsuite/keybinds/keybinds.txt", "DATA"))
-else 
-	local defaultbinds = {
-		[1] = {
-			["text"] = "Salutieren", 
-			["key"] = KEY_E, 
-			["bind"] = "act salute"
-			}, 
-		
-		[2] = {
-			["text"] = "German in den Arsch treten", 
-			["key"] = KEY_R, 
-			["bind"] = "say German_SW ist tollllll"
+	GAS.Keybinds = GAS.Keybinds or {}
+	GAS.Keybinds.Version = "1.1"
+	local function createbinds()
+		local defaultbinds = {
+			[1] = {
+				["text"] = "Verbeugen", 
+				["key"] = KEY_E, 
+				["bind"] = "act bow"
+				}, 
+			
+			[2] = {
+				["text"] = "German in den Arsch treten", 
+				["key"] = KEY_R, 
+				["bind"] = "say German_SW ist tollllll"
+				}
 			}
-		}
-	file.CreateDir("gmodadminsuite/keybinds")
-	file.Write("gmodadminsuite/keybinds/keybinds.txt", util.TableToJSON(defaultbinds))
+		file.CreateDir("gmodadminsuite/keybinds")
+		file.Write("gmodadminsuite/keybinds/keybinds.txt", util.TableToJSON(defaultbinds))
+		file.Write("gmodadminsuite/keybinds/version.txt", GAS.Keybinds.Version)
+	end
+
+ local function checkbinds()
+         if file.Exists("gmodadminsuite/keybinds/keybinds.txt", "DATA") and file.Exists("gmodadminsuite/keybinds/version.txt", "DATA") then 
+         	local clversion = file.Read("gmodadminsuite/keybinds/version.txt", "DATA")
+			 print(clversion)
+			 print(GAS.Keybinds.Version)
+			if !(clversion == GAS.Keybinds.Version) then
+				print("not euqual")
+				createbinds()
+			end
 	
-local was = file.Read("gmodadminsuite/keybinds/keybinds.txt", "DATA")
-	GAS.Keybinds = util.JSONToTable(was)
+         else 
+         createbinds()
+         end	
+	GAS.Keybinds = util.JSONToTable(file.Read("gmodadminsuite/keybinds/keybinds.txt", "DATA"))
 end
-end
+
 hook.Add("PlayerInitialSpawn", "Keynbindchecker", checkbinds())
 hook.Add("PlayerButtonDown", "KeybindChecker", function(ply, btn)
 for k, j in pairs(GAS.Keybinds) do
@@ -54,8 +67,8 @@ GAS:hook("gmodadminsuite:ModuleFrame:keybinds", "keybinds:menu", function(Module
 		base:Dock(TOP)
 		base:SetSize(100, 100)
 		base.Paint = function()
-        draw.SimpleText(v.text, "DermaDefault", 40, 10, Color(255, 255, 255))
-		draw.SimpleText("Command: "..v.bind, "DermaDefault", 40, 30, Color(255, 255, 255))
+        draw.SimpleText(v.text, "DermaDefault", 40, 20, Color(255, 255, 255))
+		draw.SimpleText("Command: "..v.bind, "DermaDefault", 40, 40, Color(255, 255, 255))
 		end
 		local binder = vgui.Create("YBinder", base)
 		binder:SetPos(250, 20)
@@ -74,16 +87,16 @@ GAS:hook("gmodadminsuite:ModuleFrame:keybinds", "keybinds:menu", function(Module
 			file.Write("gmodadminsuite/keybinds/keybinds.txt", util.TableToJSON(GAS.Keybinds))
 		end
 	end
-	local button = vgui.Create("bVGUI.Button", tab)
-	button:Dock(TOP)
-	button:SetSize(400, 100)
-	button:SetText("Eigenen Bind erstellen")
-	button.Paint = function()
-
-		draw.RoundedBox(4, 0, 0, ScrW(), 100, Color(255, 255, 0, 100))
-	end
-	
-	button.DoClick = function(self)
+--	local button = vgui.Create("bVGUI.Button", tab)
+--	button:Dock(TOP)
+--	button:SetSize(400, 100)
+--	button:SetText("Eigenen Bind erstellen")
+--	button.Paint = function()
+--
+--		draw.RoundedBox(4, 0, 0, ScrW(), 100, Color(255, 255, 0, 100))
+--	end
+--	
+--	button.DoClick = function(self)
 --		Derma_StringRequest(
 --			"Yolos Keybind System", 
 --			"Gebe den Konsolen Command des Binds ein",
@@ -115,5 +128,5 @@ GAS:hook("gmodadminsuite:ModuleFrame:keybinds", "keybinds:menu", function(Module
 --	end
 --
 --end)
-end
+--end
 end)
