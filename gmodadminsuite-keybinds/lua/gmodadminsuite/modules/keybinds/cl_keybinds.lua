@@ -10,9 +10,10 @@ if CLIENT then
 				}, 
 			
 			[2] = {
-				["text"] = "German in den Arsch treten", 
+				["text"] = "German Funkt", 
 				["key"] = KEY_R, 
-				["bind"] = "say German_SW ist tollllll"
+				["bind"] = "+hradio_talk",
+				["bindend"] = "-hradio_talk"
 				}
 			}
 		file.CreateDir("gmodadminsuite/keybinds")
@@ -23,10 +24,10 @@ if CLIENT then
  local function checkbinds()
          if file.Exists("gmodadminsuite/keybinds/keybinds.txt", "DATA") and file.Exists("gmodadminsuite/keybinds/version.txt", "DATA") then 
          	local clversion = file.Read("gmodadminsuite/keybinds/version.txt", "DATA")
-			 print(clversion)
-			 print(GAS.Keybinds.Version)
+			 --print(clversion)
+			 --print(GAS.Keybinds.Version)
 			if !(clversion == GAS.Keybinds.Version) then
-				print("not euqual")
+				--print("not euqual")
 				createbinds()
 			end
 	
@@ -38,13 +39,29 @@ end
 
 hook.Add("PlayerInitialSpawn", "Keynbindchecker", checkbinds())
 hook.Add("PlayerButtonDown", "KeybindChecker", function(ply, btn)
-for k, j in pairs(GAS.Keybinds) do
+timer.Simple(1, function()
+	for k, j in pairs(GAS.Keybinds) do
 	if btn == j.key then
 		ply:ConCommand(j.bind)
 	else 
 	end
     end
 end)
+end)
+
+
+hook.Add("PlayerButtonUp", "KeybindChecker", function(ply, btn)
+	timer.Simple(1, function()
+		for k, j in pairs(GAS.Keybinds) do
+			if j.bindend == nil then continue end
+		if btn == j.key then
+			ply:ConCommand(j.bindend)
+		else 
+		end
+		end
+	end)
+	end)
+
 end
 
 GAS:hook("gmodadminsuite:ModuleSize:keybinds", "keybinds:framesize", function()
